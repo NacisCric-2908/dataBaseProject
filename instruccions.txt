@@ -5,6 +5,7 @@ project
 project
 
 # la conexion esta en dbProject/project/views.py
+# configuraccion de las urls en dbProject/project/urls.py
 
 # Activar entorno virtual
 
