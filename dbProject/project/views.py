@@ -24,9 +24,24 @@ def agregar_cliente(request):
     miconexion = conexion()
     cursor = miconexion.cursor()
 
-    cursor.execute("INSERT INTO Cliente (codigo, nombre, apellido, numDocumento, tipoDocumento) VALUES (:1, :2, :3, :4, :5)", 
-                   (codigo, nombre, apellido, numDocumento, tipoDocumento))
+    cursor.execute("INSERT INTO Cliente (codCliente, idTipoDoc, nomCliente, apellCliente, numDocumento) VALUES (:1, :2, :3, :4, :5)", 
+                   (codigo, tipoDocumento,  nombre, apellido, numDocumento))
     
     miconexion.commit()
     cursor.close()
     miconexion.close()
+
+    messages.success(request, "Cliente agregado correctamente")
+    return home(request)
+
+def buscarCliente(request,codigo):
+    miconexion = conexion()
+    cursor = miconexion.cursor()
+
+    cursor.execute("SELECT * FROM Cliente WHERE codigo = :1", (codigo,))
+    cliente = cursor.fetchone()
+
+    cursor.close()
+    miconexion.close()
+
+    return render(request, "project/editarCliente.html", {"cliente": cliente})

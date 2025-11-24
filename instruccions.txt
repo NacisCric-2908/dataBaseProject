@@ -4,6 +4,8 @@ project
 # Contraseña
 project
 
+# la conexion esta en dbProject/project/views.py
+
 # Activar entorno virtual
 
 # En Windows:
