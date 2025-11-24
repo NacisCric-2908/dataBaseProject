@@ -38,7 +38,7 @@ def buscarCliente(request,codigo):
     miconexion = conexion()
     cursor = miconexion.cursor()
 
-    cursor.execute("SELECT * FROM Cliente WHERE codigo = :1", (codigo,))
+    cursor.execute("SELECT * FROM Cliente WHERE codCliente = :1", (codigo,))
     cliente = cursor.fetchone()
 
     cursor.close()
