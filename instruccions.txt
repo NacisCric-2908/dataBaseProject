@@ -1,0 +1,19 @@
+# Usuario db
+project
+
+# Contraseña
+project
+
+# Activar entorno virtual
+
+# En Windows:
+venv\Scripts\activate
+
+# En Linux/Mac:
+source venv/bin/activate
+
+# para correr el servidor local
+(en la carpeta de la app dbProject) python manage.py runserver
+
+# Instalar todos los paquetes desde requirements.txt
+pip install -r requirements.txt
