@@ -11,6 +11,14 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import sys
+
+# Inicializar cx_Oracle para Oracle 11g
+try:
+    import cx_Oracle
+    cx_Oracle.init_oracle_client()
+except Exception as e:
+    print(f"Advertencia al inicializar Oracle Client: {e}", file=sys.stderr)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -75,8 +83,10 @@ WSGI_APPLICATION = 'dbProject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'oracle_backend',  # Backend personalizado para Oracle 11g
+        'NAME': 'localhost:1521/XE',
+        'USER': 'project',
+        'PASSWORD': 'project',
     }
 }
 

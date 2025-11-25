@@ -2,6 +2,12 @@ from django.shortcuts import render
 from django.contrib import messages
 import oracledb
 
+# Inicializar modo thick para soportar Oracle XE 11g
+try:
+    oracledb.init_oracle_client()
+except Exception as e:
+    print(f"Advertencia al inicializar Oracle Client: {e}")
+
 # Create your views here.
 def conexion():
     conexion = oracledb.connect(user = "project", password = "project", dsn = "localhost:1521/XE")
