@@ -18,5 +18,8 @@ source venv/bin/activate
 # para correr el servidor local
 (en la carpeta de la app dbProject) python manage.py runserver
 
+# para ejecutar test
+(en la carpeta de la app dbProject) python manage.py test
+
 # Instalar todos los paquetes desde requirements.txt
 pip install -r requirements.txt

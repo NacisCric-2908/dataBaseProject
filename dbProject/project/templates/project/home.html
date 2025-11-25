@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Registro Cliente</title>
+    <link rel="stylesheet" href="{% static 'project/style.css' %}">
+</head>
+<body>
+    <div class="registro-wrapper">
+        <h2 class="titulo-form">REGISTRO CLIENTE</h2>
+        {% if messages %}
+        <ul class="mensajes">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <form id="formRegistro" method="POST" action="{% url 'agregarCliente' %}" autocomplete="off">
+            {% csrf_token %}
+            <div class="campo linea-codigo">
+                <label for="idCodigo">Código</label>
+                <input type="text" name="txtCodigo" id="idCodigo" required>
+                <button type="button" id="btnBuscar" class="boton-icono" title="Buscar">
+                    🔍
+                </button>
+            </div>
+            <div class="campo">
+                <label for="idNombre">Nombre</label>
+                <input type="text" name="txtNombre" id="idNombre" required>
+            </div>
+            <div class="campo">
+                <label for="idApellido">Apellido</label>
+                <input type="text" name="txtApellido" id="idApellido" required>
+            </div>
+            <div class="campo">
+                <label for="idNumDocumento">nDocumento</label>
+                <input type="text" name="txtNumDocumento" id="idNumDocumento" required>
+            </div>
+            <div class="campo">
+                <label for="idTipoDocumento">Tipo Documento</label>
+                <select name="TipoDocumento" id="idTipoDocumento" required>
+                    <option value="CC">CC</option>
+                    <option value="Pasaporte">Pasaporte</option>
+                    <option value="Carnet Extranjería">Carnet Extranjería</option>
+                </select>
+            </div>
+            <div class="acciones">
+                <button type="submit" class="btn-guardar">Guardar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        (function() {
+            const btnBuscar = document.getElementById('btnBuscar');
+            const inputCodigo = document.getElementById('idCodigo');
+            btnBuscar.addEventListener('click', function() {
+                const codigo = (inputCodigo.value || '').trim();
+                if (!codigo) {
+                    alert('Ingrese un código para buscar');
+                    inputCodigo.focus();
+                    return;
+                }
+                const url = `${window.location.origin}{% url 'buscarCliente' 'CODIGO_PLACEHOLDER' %}`.replace('CODIGO_PLACEHOLDER', encodeURIComponent(codigo));
+                window.location.href = url;
+            });
+        })();
+    </script>
+</body>
+</html>
