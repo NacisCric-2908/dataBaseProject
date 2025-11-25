@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Editar Cliente</title>
+    <link rel="stylesheet" href="{% static 'project/style.css' %}">
+</head>
+<body>
+    <div class="registro-wrapper">
+        <h2 class="titulo-form">EDITAR CLIENTE</h2>
+        {% if messages %}
+        <ul class="mensajes">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if cliente %}
+        <div class="info-cliente">
+            <h3>Información del Cliente</h3>
+            <div class="dato">
+                <strong>Código:</strong> {{ cliente.0 }}
+            </div>
+            <div class="dato">
+                <strong>Tipo Documento:</strong> {{ cliente.1 }}
+            </div>
+            <div class="dato">
+                <strong>Nombre:</strong> {{ cliente.2 }}
+            </div>
+            <div class="dato">
+                <strong>Apellido:</strong> {{ cliente.3 }}
+            </div>
+            <div class="dato">
+                <strong>N° Documento:</strong> {{ cliente.4 }}
+            </div>
+            <div class="acciones">
+                <a href="{% url 'home' %}" class="btn-volver">Volver al inicio</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="mensaje-error">
+            <p>⚠️ No se encontró el cliente con el código especificado</p>
+            <a href="{% url 'home' %}" class="btn-volver">Volver al inicio</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

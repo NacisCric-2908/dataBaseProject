@@ -1,25 +1,88 @@
-# Usuario db
-project
+==============================
+GUÍA DE USO DEL PROYECTO
+==============================
 
-# Contraseña
-project
+PROYECTO: Integración Django + Oracle XE 11g (opcional)
 
-# la conexion esta en dbProject/project/views.py
-# configuraccion de las urls en dbProject/project/urls.py
+Credenciales Oracle (modo ejemplo / desarrollo):
+- Usuario: project
+- Contraseña: project
+- DSN: localhost:1521/XE
 
-# Activar entorno virtual
+Ubicación de la lógica de conexión manual: `dbProject/project/views.py`
+Backend Oracle personalizado: `dbProject/oracle_backend/base.py`
+Rutas (URLs): `dbProject/project/urls.py`
 
-# En Windows:
-venv\Scripts\activate
+1. Requisitos Previos
+---------------------
+- Python 3.11+ (recomendado)
+- (Opcional) Oracle XE 11g instalado y servicio activo
+- (Opcional) Oracle Instant Client en el PATH (para modo thick)
+- pip actualizado: `python -m pip install --upgrade pip`
 
-# En Linux/Mac:
-source venv/bin/activate
+2. Crear y Activar Entorno Virtual
+----------------------------------
+Windows (PowerShell):
+	python -m venv venv
+	venv\Scripts\activate
 
-# para correr el servidor local
-(en la carpeta de la app dbProject) python manage.py runserver
+Linux / macOS:
+	python -m venv venv
+	source venv/bin/activate
 
-# para ejecutar test
-(en la carpeta de la app dbProject) python manage.py test
+3. Instalar Dependencias
+------------------------
+	pip install -r requirements.txt
 
-# Instalar todos los paquetes desde requirements.txt
-pip install -r requirements.txt
+4. Comprobar Conexión a Oracle (Opcional)
+-----------------------------------------
+Ejecuta:
+	python test_connection.py
+Si falla la inicialización del cliente, instala Oracle Instant Client y agrega su ruta.
+
+5. Aplicar Migraciones (si usas las apps integradas de Django)
+-------------------------------------------------------------
+	cd dbProject
+	python manage.py migrate
+
+6. Ejecutar el Servidor de Desarrollo
+-------------------------------------
+Dentro de `dbProject`:
+	python manage.py runserver
+Abrir: http://127.0.0.1:8000/
+
+7. Ejecutar Tests
+------------------
+Dentro de `dbProject`:
+	python manage.py test
+
+8. Flujo de Trabajo Sugerido
+----------------------------
+1. Activar venv
+2. Instalar dependencias
+3. (Opcional) Verificar Oracle con `test_connection.py`
+4. Migrar (si vas a usar auth/admin)
+5. Correr servidor y validar vistas
+6. Agregar datos vía interfaz
+
+9. Problemas Comunes
+--------------------
+- Error ORA-...: Verifica servicio XE y credenciales.
+- `TemplateDoesNotExist`: Confirma carpeta `templates/project/` y nombres.
+- Migraciones pendientes: Ejecuta `python manage.py migrate`.
+
+10. Desactivar Entorno Virtual
+------------------------------
+	deactivate
+
+11. Regenerar Requirements (si agregas paquetes)
+------------------------------------------------
+	pip freeze > requirements-lock.txt
+
+12. Seguridad (producción)
+--------------------------
+- Cambiar `SECRET_KEY`.
+- Configurar `DEBUG = False` y `ALLOWED_HOSTS`.
+- Usar usuario/contraseña Oracle distintos.
+
+FIN.

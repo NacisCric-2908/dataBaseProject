@@ -1,10 +1,17 @@
-asgiref==3.7.2
-cffi==2.0.0
-cryptography==46.0.3
-Django==3.2.25
+# Dependencias principales del proyecto
+# Django LTS elegido para compatibilidad estable con backend Oracle 11g personalizado.
+Django==4.2.16
+
+# Conectividad Oracle (modo thick para XE 11g)
 oracledb==3.4.1
-pycparser==2.23
-sqlparse==0.4.4
-typing_extensions==4.15.0
-pytz==2024.2
 cx_Oracle==8.3.0
+
+# (Las dependencias transitivas como asgiref, sqlparse, pytz se instalarán automáticamente)
+
+# Si necesitas fijar todo el árbol para recreaciones exactas usa:
+# pip freeze > requirements-lock.txt
+
+# Desarrollo opcional (descomenta si lo requieres)
+# pytest==8.3.3
+# black==24.10.0
+# mypy==1.11.2

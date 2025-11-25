@@ -21,29 +21,30 @@
             {% csrf_token %}
             <div class="campo linea-codigo">
                 <label for="idCodigo">Código</label>
-                <input type="text" name="txtCodigo" id="idCodigo" required>
+                <input type="text" name="txtCodigo" id="idCodigo" maxlength="5" required>
                 <button type="button" id="btnBuscar" class="boton-icono" title="Buscar">
                     🔍
                 </button>
             </div>
             <div class="campo">
                 <label for="idNombre">Nombre</label>
-                <input type="text" name="txtNombre" id="idNombre" required>
+                <input type="text" name="txtNombre" id="idNombre" maxlength="30" required>
             </div>
             <div class="campo">
                 <label for="idApellido">Apellido</label>
-                <input type="text" name="txtApellido" id="idApellido" required>
+                <input type="text" name="txtApellido" id="idApellido" maxlength="30" required>
             </div>
             <div class="campo">
                 <label for="idNumDocumento">nDocumento</label>
-                <input type="text" name="txtNumDocumento" id="idNumDocumento" required>
+                <input type="text" name="txtNumDocumento" id="idNumDocumento" maxlength="15" required>
             </div>
             <div class="campo">
                 <label for="idTipoDocumento">Tipo Documento</label>
                 <select name="TipoDocumento" id="idTipoDocumento" required>
-                    <option value="CC">CC</option>
-                    <option value="Pasaporte">Pasaporte</option>
-                    <option value="Carnet Extranjería">Carnet Extranjería</option>
+                    <option value="">-- Seleccione --</option>
+                    <option value="CC">CC - Cédula de Ciudadanía</option>
+                    <option value="CE">CE - Carnet de Extranjería</option>
+                    <option value="TI">TI - Tarjeta de Identidad</option>
                 </select>
             </div>
             <div class="acciones">

@@ -1,173 +1,131 @@
-# Solución Completa: Conexión a Oracle XE 11g con Django 4.2
+# Solución Completa del Proyecto (Django + Oracle XE 11g Opcional)
 
-## ✅ PROBLEMA RESUELTO
+Este documento resume la situación actual del proyecto, las decisiones técnicas tomadas y los pasos para operar y extender la solución.
 
-El servidor Django ahora está funcionando correctamente con Oracle XE 11g.
+## 1. Objetivo
 
-## Problemas Identificados y Solucionados
+Proveer una aplicación Django que pueda funcionar con Oracle XE 11g a pesar de las restricciones de versión, utilizando un backend personalizado y el modo thick de `oracledb`/`cx_Oracle`.
 
-### 1. Oracle XE 11g no soportado por python-oracledb en modo "thin"
+## 2. Componentes Clave
 
-**Solución:** Se inicializó Oracle Client en modo "thick"
+- Django (versión LTS elegida: 4.2.x)
+- Backend personalizado: `dbProject/oracle_backend/base.py`
+- Conexión manual en vistas: `dbProject/project/views.py`
+- Script de verificación: `test_connection.py`
 
-### 2. Django 4.2+ requiere Oracle 19 o superior
+## 3. Problemas Abordados
 
-**Solución:** Se creó un backend personalizado que omite la verificación de versión
+| Problema                              | Causa                              | Solución                                                |
+| ------------------------------------- | ---------------------------------- | ------------------------------------------------------- |
+| Oracle 11g no soportado en modo thin  | Limitación driver                  | Uso modo thick + Instant Client                         |
+| Verificación de versión Django/Oracle | Core Django exige versión reciente | Sobrescritura método `check_database_version_supported` |
+| Falta de cliente Oracle               | No instalado / PATH incorrecto     | Inicialización con `init_oracle_client(lib_dir=...)`    |
 
-### 3. Faltaba el módulo cx_Oracle
+## 4. Dependencias Instalas (directas)
 
-**Solución:** Se instaló cx_Oracle==8.3.0
-
-## Cambios Implementados
-
-### 1. Paquetes Instalados
-
-```bash
-pip install oracledb cx_Oracle Django==4.2.16
-```
-
-**requirements.txt actualizado:**
-
-```
+```text
 Django==4.2.16
 oracledb==3.4.1
 cx_Oracle==8.3.0
 ```
 
-### 2. Backend Personalizado de Oracle
+Las transitivas (asgiref, sqlparse, pytz) las gestiona pip automáticamente.
 
-**Archivo creado:** `dbProject/oracle_backend/base.py`
+## 5. Backend Personalizado
+
+Archivo: `oracle_backend/base.py`
 
 ```python
 from django.db.backends.oracle.base import DatabaseWrapper as OracleDatabaseWrapper
 
 class DatabaseWrapper(OracleDatabaseWrapper):
     def check_database_version_supported(self):
-        # Omite la verificación de versión para Oracle 11g
+        # Omitir verificación para permitir Oracle 11g
         pass
 ```
 
-### 3. Configuración en settings.py
+## 6. Conexión en Vistas
 
-**Inicialización de Oracle Client:**
-
-```python
-import cx_Oracle
-try:
-    cx_Oracle.init_oracle_client()
-except Exception as e:
-    print(f"Advertencia: {e}", file=sys.stderr)
-```
-
-**Configuración de base de datos:**
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'oracle_backend',  # Backend personalizado
-        'NAME': 'localhost:1521/XE',
-        'USER': 'project',
-        'PASSWORD': 'project',
-    }
-}
-```
-
-### 4. Actualización en views.py
+Ejemplo en `project/views.py`:
 
 ```python
 import oracledb
 try:
     oracledb.init_oracle_client()
 except Exception as e:
-    print(f"Advertencia: {e}")
+    print(f"Advertencia al inicializar Oracle Client: {e}")
+
+def conexion():
+    return oracledb.connect(user="project", password="project", dsn="localhost:1521/XE")
 ```
 
-## Estado Actual
+## 7. Script de Diagnóstico
 
-### ✅ Servidor Funcionando
+`python test_connection.py` valida:
+
+- Inicialización modo thick
+- Conexión básica
+- Consulta a `v$version`
+- Presencia de tabla `Cliente`
+
+## 8. Estado Actual (Ejemplo Esperado)
 
 ```
-Django version 4.2.16, using settings 'dbProject.settings'
-Starting development server at http://127.0.0.1:8000/
+✓ Oracle Client inicializado (thick)
+✓ Conexión exitosa
+✓ Versión Oracle detectada
+✓ Tabla Cliente accesible
 ```
 
-### ✅ Conexión a Oracle Exitosa
-
-- Usuario: `project`
-- Contraseña: `project`
-- DSN: `localhost:1521/XE`
-- Versión: Oracle Database 11g Express Edition Release 11.2.0.2.0
-
-### ✅ Página Principal Cargando
-
-- GET / HTTP/1.1 200 ✓
-- CSS cargando correctamente ✓
-
-## Cómo Ejecutar
+## 9. Ejecución Local
 
 ```bash
 cd dbProject
 python manage.py runserver
 ```
 
-Luego abre: http://127.0.0.1:8000/
+Abrir: http://127.0.0.1:8000/
 
-## Advertencias (No Críticas)
+## 10. Migraciones
 
-### Migraciones Pendientes
-
-```
-You have 18 unapplied migration(s)
-```
-
-Son migraciones de Django (admin, auth, sessions). Se pueden aplicar con:
+Si deseas usar admin/auth:
 
 ```bash
 python manage.py migrate
 ```
 
-### Errores de Aplicación (No de Conexión)
+## 11. Errores Comunes y Mitigaciones
 
-Estos son errores en el código de tu aplicación, no en la conexión:
+| Error                | Significado                  | Acción                                         |
+| -------------------- | ---------------------------- | ---------------------------------------------- |
+| ORA-00904            | Columna inválida             | Revisar esquema tabla Cliente                  |
+| TemplateDoesNotExist | Falta archivo de plantilla   | Crear `editarCliente.html` en carpeta correcta |
+| ORA-12154 / 12541    | DSN / listener no disponible | Verificar servicio XE + puerto 1521            |
+| Error init thick     | Falta Instant Client         | Agregar ruta con `lib_dir`                     |
 
-1. **ORA-00904: "NUMDOCUMENTO": invalid identifier**  
-   → Verificar nombre correcto de la columna en la tabla Cliente
+## 12. Seguridad / Producción
 
-2. **TemplateDoesNotExist: project/editarCliente.html**  
-   → Crear el template faltante
+- Mover credenciales a variables de entorno.
+- Rotar `SECRET_KEY` y desactivar `DEBUG`.
+- Limitar hosts en `ALLOWED_HOSTS`.
+- Considerar actualizar Oracle (11g está deprecado).
 
-## Requisitos del Sistema
+## 13. Próximos Pasos Recomendados
 
-- ✅ Oracle XE 11g instalado y corriendo
-- ✅ Oracle Instant Client configurado en PATH
-- ✅ Python 3.13.5
-- ✅ Django 4.2.16
-- ✅ cx_Oracle 8.3.0 + oracledb 3.4.1
+1. Refactorizar lógica SQL a una capa de servicio.
+2. Añadir validaciones de integridad en BD.
+3. Implementar tests unitarios para vistas y lógica de inserción.
+4. Contener configuración sensible (.env + django-environ).
 
-## Notas Importantes
+## 14. Checklist Rápido
 
-- El backend personalizado permite usar Oracle 11g con Django 4.2
-- Algunas características avanzadas de Django pueden no funcionar con Oracle 11g
-- Para producción, se recomienda actualizar a Oracle 19c o superior
-- El modo "thick" requiere Oracle Instant Client en el PATH
+- [ ] venv activo
+- [ ] Dependencias instaladas
+- [ ] Instant Client disponible (si se usa Oracle)
+- [ ] Migraciones aplicadas (si se usa auth/admin)
+- [ ] Conexión verificada (`test_connection.py`)
+- [ ] Servidor en marcha
 
-## Próximos Pasos
+---
 
-Si deseas corregir los errores de aplicación:
-
-1. Verificar la estructura de la tabla Cliente:
-
-   ```sql
-   DESC Cliente;
-   ```
-
-2. Crear el template `editarCliente.html` en:
-
-   ```
-   dbProject/project/templates/project/editarCliente.html
-   ```
-
-3. Aplicar las migraciones de Django (opcional):
-   ```bash
-   python manage.py migrate
-   ```
+Documento consolidado para visión general y mantenimiento.
