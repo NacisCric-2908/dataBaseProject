@@ -76,7 +76,7 @@ def buscarCliente(request, codigo):
         if not cliente:
             messages.warning(request, f"No se encontró el cliente con código: {codigo}")
         
-        return render(request, "project/editarCliente.html", {"cliente": cliente})
+        return render(request, "project/buscarCliente.html", {"cliente": cliente})
     except Exception as e:
         messages.error(request, f"Error al buscar cliente: {str(e)}")
         return home(request)
