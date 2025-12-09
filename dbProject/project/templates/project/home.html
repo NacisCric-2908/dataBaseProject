@@ -42,9 +42,9 @@
                 <label for="idTipoDocumento">Tipo Documento</label>
                 <select name="TipoDocumento" id="idTipoDocumento" required>
                     <option value="">-- Seleccione --</option>
-                    <option value="CC">CC - Cédula de Ciudadanía</option>
-                    <option value="CE">CE - Carnet de Extranjería</option>
-                    <option value="TI">TI - Tarjeta de Identidad</option>
+                    {% for tipo in tipos_documento %}
+                    <option value="{{ tipo.0 }}">{{ tipo.0 }} - {{ tipo.1 }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <div class="acciones">

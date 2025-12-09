@@ -18,7 +18,18 @@ def home(request):
     cursor = miconexion.cursor()
     lista = cursor.execute("SELECT * FROM Cliente")
     listado = lista.fetchall()
-    return render(request, "project/home.html", {"listado": listado})
+    
+    # Obtener tipos de documento
+    cursor.execute("SELECT idTipoDoc, descTipoDoc FROM TipoDocumento ORDER BY idTipoDoc")
+    tipos_documento = cursor.fetchall()
+    
+    cursor.close()
+    miconexion.close()
+    
+    return render(request, "project/home.html", {
+        "listado": listado,
+        "tipos_documento": tipos_documento
+    })
 
 def agregar_cliente(request):
     codigo = request.POST['txtCodigo'].strip().upper()
